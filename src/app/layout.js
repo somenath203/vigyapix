@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { AuthProvider } from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +13,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 export const metadata = {
   title: "Vigyapix",
@@ -29,13 +28,15 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
-      
     </html>
   );
 }

@@ -49,15 +49,15 @@ const Page = () => {
 
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white px-6">
+    <main className="flex min-h-screen items-center justify-center px-6">
 
       <div className="text-center">
 
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           AI Product Ads Generator
         </h1>
 
-        <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600">
+        <p className="mx-auto mt-4 max-w-xl text-lg">
           Create professional product images and video ads using AI.{" "}
         </p>
 
@@ -65,8 +65,8 @@ const Page = () => {
 
           <Link href="/dashboard">
 
-            <Button className="mt-8 inline-flex rounded-lg bg-black px-6 py-3 font-medium text-white transition hover:bg-gray-800">
-              Get Started
+            <Button className="mt-8 inline-flex rounded-lg hover:cursor-pointer">
+              Go to Dashboard
             </Button>
 
           </Link>
@@ -74,7 +74,7 @@ const Page = () => {
 
           <Button
             onClick={handleGoogleAuthentication}
-            className="mt-8 inline-flex rounded-lg bg-black px-6 py-3 font-medium text-white transition hover:bg-gray-800"
+            className="mt-8 inline-flex rounded-lg hover:cursor-pointer"
           >
             Get Started
           </Button>
