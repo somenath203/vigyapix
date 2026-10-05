@@ -1,0 +1,15 @@
+minimumReleaseAge: 4320
+minimumReleaseAgeStrict: false
+minimumReleaseAgeIgnoreMissingTime: false
+blockExoticSubdeps: true
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 525600
+trustLockfile: false
+overrides:
+  "baseline-browser-mapping": "2.11.26"
+  "electron-to-chromium": "1.5.443"
+  "ignore": "7.0.11"
+allowBuilds:
+  '@firebase/util': true
+  protobufjs: true
+  unrs-resolver: true
