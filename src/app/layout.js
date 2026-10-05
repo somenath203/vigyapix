@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,15 +30,25 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+
+          </AuthProvider>
+
         </ThemeProvider>
+
       </body>
+
     </html>
   );
 }

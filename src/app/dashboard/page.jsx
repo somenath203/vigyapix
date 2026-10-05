@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuthGlobalProvider } from "@/components/AuthProvider";
 import LoadUserDataLoading from "../_components/LoadUserDataLoading";
 import Header from "./_components/Header";
+import AiToolsList from "./_components/AiToolsList";
+import UsersCreationHistory from "./_components/UsersCreationHistory";
 
 
 const Page = () => {
@@ -47,11 +49,9 @@ const Page = () => {
 
         <div className="mx-auto max-w-6xl">
 
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <AiToolsList />
 
-          <p className="mt-2">
-            Welcome to your AI Product Ads Generator.
-          </p>
+          <UsersCreationHistory />
 
         </div>
 
