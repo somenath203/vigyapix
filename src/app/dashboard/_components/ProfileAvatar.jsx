@@ -6,8 +6,11 @@ import {
 } from "@/components/ui/tooltip";
 
 const ProfileAvatar = ({ userData }) => {
+
+  console.log(userData?.photoURL);
+  
   return (
-    <Tooltip>
+    userData && <Tooltip>
 
       <TooltipTrigger>
 

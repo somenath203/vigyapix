@@ -7,7 +7,7 @@ const allAITools = [
     name: "AI Product Images",
     description:
       "Generate high-quality, professional product images with AI in seconds.",
-    pathToNavigate: "/",
+    pathToNavigate: "/creative-ai-tools/product-images",
   },
   {
     id: 2,

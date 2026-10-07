@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -46,6 +47,8 @@ export default function RootLayout({ children }) {
           </AuthProvider>
 
         </ThemeProvider>
+
+        <Toaster richColors={true} position="bottom-right" />
 
       </body>
 
