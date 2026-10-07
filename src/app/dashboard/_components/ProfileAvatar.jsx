@@ -7,8 +7,6 @@ import {
 
 const ProfileAvatar = ({ userData }) => {
 
-  console.log(userData?.photoURL);
-  
   return (
     userData && <Tooltip>
 

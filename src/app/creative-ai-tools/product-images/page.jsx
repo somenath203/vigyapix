@@ -1,10 +1,19 @@
 "use client";
 
-import Header from "@/app/dashboard/_components/Header";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import {
+  ImageKitAbortError,
+  ImageKitInvalidRequestError,
+  ImageKitServerError,
+  ImageKitUploadNetworkError,
+  upload,
+} from "@imagekit/next";
+import axios from "axios";
 
 import { useAuthGlobalProvider } from "@/components/AuthProvider";
+import Header from "@/app/dashboard/_components/Header";
 import LoadUserDataLoading from "@/app/_components/LoadUserDataLoading";
 import FormInput from "./_components/FormInput";
 import PreviewResult from "./_components/PreviewResult";
@@ -12,9 +21,172 @@ import PreviewResult from "./_components/PreviewResult";
 
 const Page = () => {
 
+  const [allFormData, setAllFormData] = useState();
+
+  const [ loadingGeneratedProductImage, setLoadingGeneratedProductImage ] = useState(false);
+
+
   const router = useRouter();
 
   const { userData, loadingUserData } = useAuthGlobalProvider();
+
+  const abortController = new AbortController();
+
+  const onHandleUserInputChange = (fieldName, fieldValue) => {
+
+    setAllFormData((prevValues) => ({
+      ...prevValues,
+      [fieldName]: fieldValue,
+    }));
+
+  };
+
+  const authenticator = async () => {
+
+    try {
+
+      const response = await fetch("/api/upload-auth");
+
+      if (!response.ok) {
+
+        const errorText = await response.text();
+
+        throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+
+      }
+
+      const data = await response.json();
+
+      const { signature, expire, token, publicKey } = data;
+
+      return { signature, expire, token, publicKey };
+
+    } catch (error) {
+
+      console.error("Authentication error:", error);
+
+      throw new Error("Authentication request failed");
+
+    }
+
+  };
+
+
+  const onGenerateProductImageByAI = async () => {
+
+    if (!allFormData?.imageInput) {
+
+      toast.error("please upload product image");
+
+      return;
+
+    } else if (!allFormData?.descriptionInput) {
+
+      toast.error("description is required");
+
+      return;
+
+    } else if (!allFormData?.imageSizeInput) {
+
+      toast.error("please select image size");
+
+      return;
+
+    }
+
+
+    let authParams;
+
+    try {
+
+      authParams = await authenticator();
+
+    } catch (authError) {
+
+      console.error("Failed to authenticate for upload:", authError);
+
+      return;
+
+    }
+
+    const { signature, expire, token, publicKey } = authParams;
+
+    // Call the ImageKit SDK upload function with the required parameters and callbacks.
+    try {
+
+      setLoadingGeneratedProductImage(true);
+
+      const uploadResponse = await upload({
+        // Authentication parameters
+        expire,
+        token,
+        signature,
+        publicKey,
+        file: allFormData?.imageInput,
+        fileName: allFormData?.imageInput?.name, // Optionally set a custom file name
+        // Abort signal to allow cancellation of the upload if needed.
+        abortSignal: abortController.signal,
+      });
+
+      const { data } = await axios.post('/api/generate-product-image-ai', {
+        productInputImageUrlFromImageKit: uploadResponse?.url,
+        productInputDescription: allFormData?.descriptionInput,
+        productInputImageSize: allFormData?.imageSizeInput
+      });
+
+      console.log(data);
+
+      if (data?.success) {
+
+        toast.success('product image generated successfully');
+
+      }
+      
+
+    } catch (error) {
+
+      // Handle specific error types provided by the ImageKit SDK.
+      if (error instanceof ImageKitAbortError) {
+
+        console.error("Upload aborted:", error.reason);
+
+        toast.error(error.reason);
+
+      } else if (error instanceof ImageKitInvalidRequestError) {
+
+        console.error("Invalid request:", error.message);
+
+        toast.error(error.message);
+
+      } else if (error instanceof ImageKitUploadNetworkError) {
+
+        console.error("Network error:", error.message);
+
+        toast.error(error.message);
+
+      } else if (error instanceof ImageKitServerError) {
+
+        console.error("Server error:", error.message);
+
+        toast.error(error.message);
+
+      } else {
+
+        // Handle any other errors that may occur.
+        console.error("Upload error:", error);
+
+        toast.error(error.message || 'Something went wrong while uploading image. Please try again after sometime.');
+
+      }
+
+    } finally {
+
+      setLoadingGeneratedProductImage(false);
+
+    }
+
+  };
+
 
   useEffect(() => {
 
@@ -33,11 +205,13 @@ const Page = () => {
 
   }
 
+
   if (!userData) {
 
     return null;
 
   }
+
 
   return (
 
@@ -48,7 +222,7 @@ const Page = () => {
       <main className="min-h-screen px-6 py-10">
 
         <div className="mx-auto max-w-6xl">
-
+          
           <h2 className="font-bold text-2xl my-3">
             AI Product Image Generator
           </h2>
@@ -59,12 +233,20 @@ const Page = () => {
 
               {/* form */}
               <div>
-                <FormInput />
+
+                <FormInput
+                  onHandleInputByUserChange={(fieldName, fieldValue) => onHandleUserInputChange(fieldName, fieldValue)}
+                  onGenerateProductImageByAI={onGenerateProductImageByAI}
+                  loadingGeneratingImage={loadingGeneratedProductImage}
+                />
+
               </div>
 
               {/* preview */}
               <div className="md:grid-cols-2">
+
                 <PreviewResult />
+
               </div>
 
             </div>
@@ -78,7 +260,7 @@ const Page = () => {
     </>
 
   );
-
+  
 };
 
 

@@ -9,11 +9,10 @@ import Header from "./_components/Header";
 import AiToolsList from "./_components/AiToolsList";
 import UsersCreationHistory from "./_components/UsersCreationHistory";
 
-
 const Page = () => {
 
   const router = useRouter();
-  
+
   const { userData, loadingUserData } = useAuthGlobalProvider();
 
   useEffect(() => {
@@ -25,14 +24,12 @@ const Page = () => {
     }
 
   }, [loadingUserData, userData, router]);
-  
 
   if (loadingUserData) {
 
-    return <LoadUserDataLoading />
+    return <LoadUserDataLoading />;
 
   }
-
 
   if (!userData) {
 
@@ -40,10 +37,9 @@ const Page = () => {
 
   }
 
-
   return (
     <>
-
+    
       <Header />
 
       <main className="min-h-screen px-6 py-10">

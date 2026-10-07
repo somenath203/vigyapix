@@ -1,6 +1,6 @@
 "use client";
 
-import { ImagePlus, Square, Monitor, Smartphone, Sparkles } from "lucide-react";
+import { ImagePlus, Square, Monitor, Smartphone, Sparkles, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -18,39 +18,34 @@ import {
 import { Button } from "@/components/ui/button";
 
 
-const FormInput = () => {
-
+const FormInput = ({ onHandleInputByUserChange, onGenerateProductImageByAI, loadingGeneratingImage }) => {
 
   const [inputImagePreview, setInputImagePreview] = useState();
 
 
   const handleImgInputByUser = async (imgInputByUser) => {
 
-    try {
+    if (!imgInputByUser || imgInputByUser.length === 0) {
 
-      if (!imgInputByUser || imgInputByUser.length === 0) {
-
-        return;
-
-      }
-
-      const actualImageInput = imgInputByUser[0];
-
-      if (actualImageInput?.size >= 5 * 1024 * 1024) {
-
-        toast.error("Image must be less than 5MB");
-
-        return;
-
-      }
-
-      setInputImagePreview(URL.createObjectURL(actualImageInput));
-
-    } catch (error) {
-
-      console.log(error);
+      return;
 
     }
+
+
+    const actualImageInput = imgInputByUser[0];
+
+
+    if (actualImageInput?.size >= 5 * 1024 * 1024) {
+
+      toast.error("Image must be less than 5MB");
+
+      return;
+
+    }
+
+    setInputImagePreview(URL.createObjectURL(actualImageInput));
+
+    onHandleInputByUserChange("imageInput", actualImageInput);
 
   };
 
@@ -77,7 +72,6 @@ const FormInput = () => {
                 height={300}
                 className="w-full h-full max-h-50 object-contain rounded-lg"
               />
-
             ) : (
 
               <div className="flex flex-col items-center gap-3">
@@ -106,14 +100,17 @@ const FormInput = () => {
 
       </div>
 
+
       <div className="mt-8">
 
         <h2 className="font-semibold">2. Enter product description</h2>
 
-        <Textarea 
+        <Textarea
           placeholder="Tell us more about your product and how you'd like it to be presented"
           className="resize-none min-h-37.5 mt-2"
-
+          onChange={(e) =>
+            onHandleInputByUserChange("descriptionInput", e.target.value)
+          }
         />
 
       </div>
@@ -122,7 +119,11 @@ const FormInput = () => {
 
         <h2 className="font-semibold">3. Select image size</h2>
 
-        <Select>
+        <Select
+          onValueChange={(selectedValue) =>
+            onHandleInputByUserChange("imageSizeInput", selectedValue)
+          }
+        >
 
           <SelectTrigger className="w-full mt-2">
 
@@ -174,13 +175,26 @@ const FormInput = () => {
 
       </div>
 
-      <Button className="mt-5 w-full hover:cursor-pointer"> <Sparkles />Generate</Button>
+      {loadingGeneratingImage ? (
+        <Button disabled={true} className="mt-5 w-full hover:cursor-pointer" onClick={onGenerateProductImageByAI}>
+
+          <Loader2 size={20} className="transition-all animate-spin duration-150" /> Generating...
+
+        </Button>
+      ) : (
+
+        <Button className="mt-5 w-full hover:cursor-pointer" onClick={onGenerateProductImageByAI}>
+
+          <Sparkles /> Generate
+
+        </Button>
+
+      )}
 
     </div>
 
   );
 
 };
-
 
 export default FormInput;
