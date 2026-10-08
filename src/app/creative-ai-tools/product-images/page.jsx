@@ -11,17 +11,22 @@ import {
   upload,
 } from "@imagekit/next";
 import axios from "axios";
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthGlobalProvider } from "@/components/AuthProvider";
 import Header from "@/app/dashboard/_components/Header";
 import LoadUserDataLoading from "@/app/_components/LoadUserDataLoading";
 import FormInput from "./_components/FormInput";
 import PreviewResult from "./_components/PreviewResult";
+import { db } from "@/firebaseConfig";
 
 
 const Page = () => {
 
-  const [allFormData, setAllFormData] = useState();
+  const [ allFormData, setAllFormData ] = useState();
+
+  const [ generatedProductImage, setGeneratedProductImage ] = useState();
 
   const [ loadingGeneratedProductImage, setLoadingGeneratedProductImage ] = useState(false);
 
@@ -111,7 +116,10 @@ const Page = () => {
 
     const { signature, expire, token, publicKey } = authParams;
 
-    // Call the ImageKit SDK upload function with the required parameters and callbacks.
+    /**
+     * Upload the input product image to ImageKit to get a publicly accessible image URL,
+     * then send that URL along with the product details to the AI image generation API.
+     */
     try {
 
       setLoadingGeneratedProductImage(true);
@@ -134,14 +142,63 @@ const Page = () => {
         productInputImageSize: allFormData?.imageSizeInput
       });
 
-      console.log(data);
-
       if (data?.success) {
 
-        toast.success('product image generated successfully');
+        const generatedProductImg = data?.generatedImg;
+        
+        console.log(generatedProductImg?.name);
+
+        let authParams;
+
+        try {
+
+          authParams = await authenticator();
+
+        } catch (authError) {
+
+          console.error("Failed to authenticate for upload:", authError);
+
+          return;
+
+        }
+
+        const { signature, expire, token, publicKey } = authParams;
+
+        /**
+         * Upload the generated product image to ImageKit so that we can get
+         * a publicly accessible URL and later store it in the user's Firestore data.
+         */
+        const uploadResponseGeneratedProductImg = await upload({
+          // Authentication parameters
+          expire,
+          token,
+          signature,
+          publicKey,
+          file: generatedProductImg,
+          fileName: `generated-product-image-${uuidv4()}.png`,
+          // Abort signal to allow cancellation of the upload if needed.
+          abortSignal: abortController.signal,
+        });
+
+        const generatedProductImageUrl = uploadResponseGeneratedProductImg?.url;
+
+        const originalProductImageUrl = uploadResponse?.url;
+
+        // Save the generated product image and related product details to Firebase-Firestore.
+        await addDoc(collection(db, 'productAdsPicturesData'), {
+          generatedProductImageUrl,
+          originalProductImageUrl,
+          productDescription: allFormData?.descriptionInput,
+          imageSize: allFormData?.imageSizeInput,
+          userEmailWhoCreatedTheImageProduct: userData?.email,
+          createdAt: serverTimestamp(),
+        });
+
+        setGeneratedProductImage(generatedProductImageUrl);
+
+        toast.success("Product image generated and saved successfully!");
 
       }
-      
 
     } catch (error) {
 
@@ -212,7 +269,6 @@ const Page = () => {
 
   }
 
-
   return (
 
     <>
@@ -245,7 +301,7 @@ const Page = () => {
               {/* preview */}
               <div className="md:grid-cols-2">
 
-                <PreviewResult />
+                <PreviewResult generatedProductImage={generatedProductImage} />
 
               </div>
 
