@@ -113,7 +113,8 @@ export async function POST(req) {
       {
         success: true,
         message: "product image generated successfully",
-        generatedImg: generatedImg
+        generatedImg: generatedImg,
+        imgToVideoPrompt: promptOutputFromOpenAIParsed?.imageToVideo
       },
       { status: 200 },
     );

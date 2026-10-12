@@ -14,7 +14,7 @@ const allAITools = [
     name: "AI Product Videos",
     description:
       "Create engaging product showcase videos with AI to bring your products to life.",
-    pathToNavigate: "/",
+    pathToNavigate: "/creative-ai-tools/product-videos",
   },
   {
     id: 3,
