@@ -285,7 +285,7 @@ const Page = () => {
 
           <div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
               {/* form */}
               <div>
@@ -299,7 +299,7 @@ const Page = () => {
               </div>
 
               {/* preview */}
-              <div className="md:grid-cols-2">
+              <div>
 
                 <PreviewResult generatedProductImage={generatedProductImage} />
 
