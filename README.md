@@ -1,323 +1,91 @@
 ```jsx
 "use client";
 
+import Link from "next/link";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import {
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitServerError,
-  ImageKitUploadNetworkError,
-  upload,
-} from "@imagekit/next";
-import axios from "axios";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
 
+import { auth } from "@/firebaseConfig";
+import { Button } from "@/components/ui/button";
 import { useAuthGlobalProvider } from "@/components/AuthProvider";
-import Header from "@/app/dashboard/_components/Header";
-import LoadUserDataLoading from "@/app/_components/LoadUserDataLoading";
-import FormInput from "./_components/FormInput";
-import PreviewResult from "./_components/PreviewResult";
-import { db } from "@/firebaseConfig";
+import LoadUserDataLoading from "./_components/LoadUserDataLoading";
 
 
 const Page = () => {
 
-  const [allFormData, setAllFormData] = useState();
-
-  const [generatedProductVideo, setGeneratedProductVideo] = useState();
-
-  const [loadingGeneratedProductVideo, setLoadingGeneratedProductVideo] = useState(false);
 
   const router = useRouter();
 
-
   const { userData, loadingUserData } = useAuthGlobalProvider();
 
-  const abortController = new AbortController();
 
-
-  const onHandleUserInputChange = (fieldName, fieldValue) => {
-
-    setAllFormData((prevValues) => ({
-      ...prevValues,
-      [fieldName]: fieldValue,
-    }));
-
-  };
-
-
-  const authenticator = async () => {
+  const handleGoogleAuthentication = async () => {
 
     try {
 
-      const response = await fetch("/api/upload-auth");
+      const provider = new GoogleAuthProvider();
 
-      if (!response.ok) {
+      const result = await signInWithPopup(auth, provider);
 
-        const errorText = await response.text();
+      const user = result?.user;
 
-        throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+      console.log("Signed-in user:", user);
 
-      }
-
-      const data = await response.json();
-
-      const { signature, expire, token, publicKey } = data;
-
-      return { signature, expire, token, publicKey };
+      router.push("/dashboard");
 
     } catch (error) {
 
-      console.error("Authentication error:", error);
-
-      throw new Error("Authentication request failed");
+      console.log(error);
 
     }
 
   };
 
-
-  const onGenerateProductVideoByAI = async () => {
-
-    if (!allFormData?.imageInput) {
-
-      toast.error("please upload product image");
-
-      return;
-
-    } else if (!allFormData?.descriptionInput) {
-
-      toast.error("description is required");
-
-      return;
-
-    }
-
-    let authParams;
-
-    try {
-
-      authParams = await authenticator();
-
-    } catch (authError) {
-
-      console.error("Failed to authenticate for upload:", authError);
-
-      return;
-
-    }
-
-    const { signature, expire, token, publicKey } = authParams;
-
-    /**
-     * Upload the input product image to ImageKit to get a publicly accessible image URL,
-     * then send that URL along with the product details to the AI video generation API.
-     */
-    try {
-
-      setLoadingGeneratedProductVideo(true);
-
-      const uploadResponse = await upload({
-        // Authentication parameters
-        expire,
-        token,
-        signature,
-        publicKey,
-        file: allFormData?.imageInput,
-        fileName: allFormData?.imageInput?.name, // Optionally set a custom file name
-        // Abort signal to allow cancellation of the upload if needed.
-        abortSignal: abortController.signal,
-      });
-
-      const { data } = await axios.post("/api/generate-product-video-ai", {
-          productInputImageUrlFromImageKit: uploadResponse?.url,
-          productInputDescription: allFormData?.descriptionInput,
-        }, { responseType: "blob"},
-      );
-
-      if (!data || data.type !== "video/mp4") {
-
-        toast.error("Something went wrong while generating product video.");
-
-        return;
-        
-      }
-
-      const generatedVideoFile = new File([data], `generated-product-video-${uuidv4()}.mp4`,
-        { type: "video/mp4" }
-      );
-
-      let authParams;
-
-      try {
-
-        authParams = await authenticator();
-
-      } catch (authError) {
-
-        console.error("Failed to authenticate for upload:", authError);
-
-        return;
-
-      }
-
-      const { signature, expire, token, publicKey } = authParams;
-
-      /**
-       * Upload the generated product image to ImageKit so that we can get
-       * a publicly accessible URL and later store it in the user's Firestore data.
-       */
-      const uploadResponseGeneratedProductVideo = await upload({
-        // Authentication parameters
-        expire,
-        token,
-        signature,
-        publicKey,
-        file: generatedVideoFile,
-        fileName: generatedVideoFile.name,
-        // Abort signal to allow cancellation of the upload if needed.
-        abortSignal: abortController.signal,
-      });
-
-      const generatedProductVideoUrl = uploadResponseGeneratedProductVideo?.url;
-
-      const originalProductVideoUrl = uploadResponse?.url;
-
-      // Save the generated product image and related product details to Firebase-Firestore.
-      await addDoc(collection(db, "productAdsVideoData"), {
-        generatedProductVideoUrl,
-        originalProductVideoUrl,
-        productDescription: allFormData?.descriptionInput,
-        userEmailWhoCreatedTheImageProduct: userData?.email,
-        createdAt: serverTimestamp(),
-      });
-
-      setGeneratedProductVideo(generatedProductVideoUrl);
-
-      toast.success("Product video generated and saved successfully!");
-
-    } catch (error) {
-
-      // Handle specific error types provided by the ImageKit SDK.
-      if (error instanceof ImageKitAbortError) {
-
-        console.error("Upload aborted:", error.reason);
-
-        toast.error(error.reason);
-
-      } else if (error instanceof ImageKitInvalidRequestError) {
-
-        console.error("Invalid request:", error.message);
-
-        toast.error(error.message);
-
-      } else if (error instanceof ImageKitUploadNetworkError) {
-
-        console.error("Network error:", error.message);
-
-        toast.error(error.message);
-
-      } else if (error instanceof ImageKitServerError) {
-
-        console.error("Server error:", error.message);
-
-        toast.error(error.message);
-
-      } else {
-
-        // Handle any other errors that may occur.
-        console.error("Upload error:", error);
-
-        toast.error(
-          error.message ||
-            "Something went wrong while uploading image. Please try again after sometime.",
-        );
-
-      }
-
-    } finally {
-
-      setLoadingGeneratedProductVideo(false);
-
-    }
-
-  };
-
-
-  useEffect(() => {
-
-    if (!loadingUserData && !userData) {
-
-      router.replace("/");
-
-    }
-
-  }, [loadingUserData, userData, router]);
 
   if (loadingUserData) {
 
-    return <LoadUserDataLoading />;
+    return <LoadUserDataLoading />
 
   }
 
-  if (!userData) {
-
-    return null;
-
-  }
 
   return (
-    <>
+    <main className="flex min-h-screen items-center justify-center px-6">
 
-      <Header />
+      <div className="text-center">
 
-      <main className="min-h-screen px-6 py-10">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          AI Product Ads Generator
+        </h1>
 
-        <div className="mx-auto max-w-6xl">
+        <p className="mx-auto mt-4 max-w-xl text-lg">
+          Create professional product images and video ads using AI.{" "}
+        </p>
 
-          <h2 className="font-bold text-2xl my-3">
-            AI Product Video Generator
-          </h2>
+        {userData ? (
 
-          <div>
+          <Link href="/dashboard">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <Button className="mt-8 inline-flex rounded-lg hover:cursor-pointer">
+              Go to Dashboard
+            </Button>
 
-              {/* form */}
-              <div>
+          </Link>
+        ) : (
 
-                <FormInput
-                  onHandleInputByUserChange={(fieldName, fieldValue) =>
-                    onHandleUserInputChange(fieldName, fieldValue)
-                  }
-                  onGenerateProductVideoByAI={onGenerateProductVideoByAI}
-                  loadingGeneratingVideo={loadingGeneratedProductVideo}
-                />
+          <Button
+            onClick={handleGoogleAuthentication}
+            className="mt-8 inline-flex rounded-lg hover:cursor-pointer"
+          >
+            Get Started
+          </Button>
 
-              </div>
+        )}
 
-              {/* preview */}
-              <div>
+      </div>
 
-                <PreviewResult generatedProductVideo={generatedProductVideo} />
-                
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </main>
-
-    </>
-
+    </main>
   );
-
 };
 
 
