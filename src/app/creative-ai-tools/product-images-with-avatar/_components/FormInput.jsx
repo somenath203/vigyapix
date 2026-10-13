@@ -22,19 +22,19 @@ import { Button } from "@/components/ui/button";
 const avatarList = [
   {
     name: 'Avatar 1',
-    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/female_avatar_one.png'
+    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/female_avatar_one.png'
   },
   {
     name: 'Avatar 2',
-    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/men_avatar_two.png'
+    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/men_avatar_two.png'
   },
   {
     name: 'Avatar 3',
-    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/female_avatar_two.png?updatedAt=1791888695039'
+    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/female_avatar_two.png?updatedAt=1791888695039'
   },
   {
     name: 'Avatar 4',
-    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/men_avatar_one.png'
+    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/men_avatar_one.png'
   },
 ];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { Download, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
@@ -18,7 +18,9 @@ import {
 
 const PreviewResult = ({ generatedProductImage }) => {
 
+
   const [isDownloadingImg, setIsDownloadingImg] = useState(false);
+
 
   const handleDownloadImage = async () => {
 
@@ -120,23 +122,22 @@ const PreviewResult = ({ generatedProductImage }) => {
                   className="hover:cursor-pointer"
                   onClick={handleDownloadImage}
                 >
-                  {isDownloadingImg ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <Download />
-                  )}
+
+                  {isDownloadingImg ? <Loader2 className="animate-spin" /> : <Download />}
+
                 </Button>
               }
             />
 
             <TooltipContent>
+
               <p>
                 {isDownloadingImg ? "Downloading Image..." : "Download Image"}
               </p>
+
             </TooltipContent>
 
           </Tooltip>
-
 
           <Tooltip>
 
@@ -160,12 +161,15 @@ const PreviewResult = ({ generatedProductImage }) => {
 
       )}
 
-
       {/* Dashed preview box */}
       <div className="min-h-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 p-6">
 
         {generatedProductImage ? (
-
+          /**
+           * Use `urlEndpoint` when `src` contains a relative image path.
+           * Omit it when `src` already contains a complete, absolute ImageKit URL,
+           * such as an image URL retrieved from Firestore.
+           */
           <Image
             src={generatedProductImage}
             alt="Generated product"
