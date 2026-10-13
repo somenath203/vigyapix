@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,20 +11,10 @@ import { db } from "@/firebaseConfig";
 
 const UsersCreationHistory = ({ userEmailAddress }) => {
 
-
-  const  [loadingAllProductPictures, setLoadingAllProductPictures ] = useState(false);
-
-  const [ loadingAllProductVideos, setLoadingAllProductVideos ] = useState(false);
-
-  const [ loadingAllProductPicturesWithAvatar, setLoadingAllProductPicturesWithAvatar ] = useState(false);
-
-
   // Fetch all generated product images for a particular email address
   const fetchProductImages = async () => {
 
     try {
-
-      setLoadingAllProductPictures(true);
 
       const q = query(
         collection(db, "productAdsPicturesData"),
@@ -39,15 +28,11 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
         ...doc.data(),
       }));
 
-      console.log("Product Images:", productImages);
+      return productImages;
 
     } catch (error) {
 
       console.error("Error fetching product images:", error);
-
-    } finally {
-
-      setLoadingAllProductPictures(false);
 
     }
 
@@ -58,8 +43,6 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
   const fetchProductVideos = async () => {
 
     try {
-
-      setLoadingAllProductVideos(true);
 
       const q = query(
         collection(db, "productAdsVideoData"),
@@ -73,15 +56,11 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
         ...doc.data(),
       }));
 
-      console.log("Product Videos:", productVideos);
+      return productVideos;
 
     } catch (error) {
 
       console.error("Error fetching product videos:", error);
-      
-    } finally {
-
-      setLoadingAllProductVideos(false);
 
     }
 
@@ -92,8 +71,6 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
   const fetchProductImagesWithAvatar = async () => {
 
     try {
-
-      setLoadingAllProductPicturesWithAvatar(true);
 
       const q = query(
         collection(db, "productAdsPictureWithAvatarData"),
@@ -107,28 +84,19 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
         ...doc.data(),
       }));
 
-      console.log("Product Images with Avatar:", productImagesWithAvatar);
+      return productImagesWithAvatar;
 
     } catch (error) {
 
       console.error("Error fetching product images with avatar:", error);
-
-    } finally {
-
-      setLoadingAllProductPicturesWithAvatar(false);
 
     }
 
   };
 
 
-  return loadingAllProductPictures || loadingAllProductVideos || loadingAllProductPicturesWithAvatar ? (
-
-    <div>Loading</div>
-
-  ) : (
-
-    <Tabs defaultValue="productimages" className="w-100 mt-4">
+  return (
+    <Tabs defaultValue="productimages" className="w-full mt-4">
 
       <TabsList>
 
@@ -162,7 +130,6 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
       </TabsContent>
 
     </Tabs>
-
   );
 
 };
