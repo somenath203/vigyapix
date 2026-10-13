@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Download, Video, Eye, Loader2 } from "lucide-react";
+import { Download, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
@@ -152,22 +152,6 @@ const PreviewResult = ({ generatedProductImage }) => {
 
             <TooltipContent>
               <p>View Image</p>
-            </TooltipContent>
-
-          </Tooltip>
-
-          <Tooltip>
-
-            <TooltipTrigger
-              render={
-                <Button variant="outline" className="hover:cursor-pointer">
-                  <Video />
-                </Button>
-              }
-            />
-
-            <TooltipContent>
-              <p>Convert Image to Video</p>
             </TooltipContent>
 
           </Tooltip>

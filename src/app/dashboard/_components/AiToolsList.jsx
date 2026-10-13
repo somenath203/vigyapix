@@ -21,7 +21,7 @@ const allAITools = [
     name: "AI Product Avatars",
     description:
       "Create engaging product presentations featuring realistic AI avatars.",
-    pathToNavigate: "/",
+    pathToNavigate: "/creative-ai-tools/product-images-with-avatar",
   },
 ];
 

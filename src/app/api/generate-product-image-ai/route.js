@@ -4,40 +4,39 @@ import { openAIClient } from "@/lib/openAIConfig";
 
 
 const PROMPT_TO_GENERATE_IMAGE = `
-Create a vibrant, professional product showcase image using the uploaded product image as the primary reference.
+Create a vibrant, professional product advertisement image using the uploaded product image as the primary visual reference.
 
-Product description provided by the user:
+**Product description provided by the user:**
 {{PRODUCT_DESCRIPTION}}
 
-Requested image size:
+**Requested image size:**
 {{IMAGE_SIZE}}
 
-Use the product description to understand the product, its purpose, target audience, visual identity, and the type of environment or creative elements that would naturally complement it.
+Analyze the product description to understand the product's identity, purpose, target audience, visual style, and the environment or creative elements that would naturally complement it.
 
-Keep the product clearly recognizable and visually faithful to the uploaded image, preserving its shape, proportions, colors, branding, packaging, and important details. Place the product prominently in the center of the composition, sharp and in focus.
+**Product fidelity:**
+Keep the product clearly recognizable and visually faithful to the uploaded reference image. Preserve its original shape, proportions, colors, materials, branding, labels, packaging, and distinctive details. Do not invent product features, change its design, distort its appearance, or introduce misleading details. Make the product the main focal point, prominently positioned, sharp, and clearly visible.
 
-Create the image according to the requested image size: {{IMAGE_SIZE}}. Ensure the composition, product placement, spacing, and visual balance are appropriate for this aspect ratio.
+**Composition and image size:**
+Create the advertisement according to the requested image size and aspect ratio specified above. Adapt the composition, product placement, spacing, camera angle, and visual balance to suit the requested format. Avoid awkward cropping or cutting off important product details.
 
-Surround the product with dynamic splashes, particles, or materials that are visually relevant to the product and its description. Choose elements that naturally complement the product rather than using generic effects. Add a clean, colorful, visually appealing background that enhances the product without distracting from it.
+**Creative direction:**
+Design an attractive, colorful background that complements the product and enhances its visual appeal without distracting from it. Incorporate relevant materials, textures, splashes, particles, or floating elements only when they naturally suit the product and its description. For example, fresh fruit may be accompanied by water droplets and fruit slices, skincare products by subtle liquid textures and botanical elements, and furniture by an elegant interior setting. Choose creative elements that enhance the product's identity rather than applying generic effects to every image.
 
-Include subtle floating elements related to the product, its purpose, or its theme to add context, depth, and visual interest. Use professional commercial product photography, cinematic lighting, realistic shadows, depth of field, balanced composition, and high visual detail.
+**Visual quality:**
+Use professional commercial product photography, high-quality lighting, realistic shadows, convincing textures, appropriate depth of field, refined color grading, and a balanced composition. Ensure the result looks polished, visually coherent, and suitable for a premium product marketing campaign.
 
-The final image should look like a premium advertisement suitable for a modern product marketing campaign.
-
-Also generate a corresponding image-to-video prompt describing how the generated product image should be animated into a short, dynamic product advertisement. Include realistic camera movement, product-focused motion, environmental movement, and subtle effects while keeping the product stable, recognizable, and visually consistent.
+The final image must prominently feature the original product while combining realistic product representation with creative, professional advertising aesthetics.
 
 Return ONLY valid JSON in exactly this format:
 
 {
-  "textToImage": "",
-  "imageToVideo": ""
+"textToImage": "Complete image-generation prompt goes here"
 }
 
-The "textToImage" value should contain the complete prompt for generating the product advertisement image, incorporating the product description and requested image size.
+The value of "textToImage" must contain a complete, standalone prompt for generating the product advertisement image. Incorporate the supplied product description, requested image size, product-specific creative direction, composition, and visual-quality requirements.
 
-The "imageToVideo" value should contain the complete prompt for animating the generated product advertisement into a short product video.
-
-Do not include Markdown, code fences, explanations, or any additional text outside the JSON.
+Return one valid JSON object with a single string property named "textToImage". Escape any quotation marks or special characters required for valid JSON. Do not include Markdown, code fences, explanations, or additional text outside the JSON.
 `;
 
 
@@ -114,7 +113,6 @@ export async function POST(req) {
         success: true,
         message: "product image generated successfully",
         generatedImg: generatedImg,
-        imgToVideoPrompt: promptOutputFromOpenAIParsed?.imageToVideo
       },
       { status: 200 },
     );
