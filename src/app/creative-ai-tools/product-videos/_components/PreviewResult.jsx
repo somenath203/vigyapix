@@ -2,7 +2,6 @@
 "use client";
 
 import { Download, Eye, Loader2 } from "lucide-react";
-import { Video } from "@imagekit/next";
 import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
@@ -144,13 +143,15 @@ const PreviewResult = ({ generatedProductVideo }) => {
       <div className="min-h-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 p-6">
 
         {generatedProductVideo ? (
-          <Video
+          <video
             src={generatedProductVideo}
             controls
             playsInline
             preload="metadata"
             className="max-h-125 w-full rounded-lg object-contain"
-          />
+          >
+            Your browser does not support video playback.
+          </video>
         ) : (
           <p className="text-center text-muted-foreground">
             Your generated product video will be displayed here.

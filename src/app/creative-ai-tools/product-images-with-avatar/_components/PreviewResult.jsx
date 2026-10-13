@@ -1,6 +1,6 @@
 "use client";
 
-import { Image } from "@imagekit/next";
+import Image from "next/image";
 import { Download, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";

@@ -70,7 +70,7 @@ export async function POST(req) {
 
   try {
 
-    const { productInputImageUrlFromImageKit, productInputDescription } = await req?.json();
+    const { productInputImageUrlFromImageKit, productInputDescription } = await req.json();
 
     // Generate a video prompt using OpenAI.
     const promptResFromOpenAI = await openAIClient.responses.create({

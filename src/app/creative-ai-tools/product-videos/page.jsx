@@ -188,7 +188,7 @@ const Page = () => {
           generatedProductVideoUrl,
           originalProductImageUrl,
           productDescription: allFormData?.descriptionInput,
-          userEmailWhoCreatedTheImageProduct: userData?.email,
+          userEmailWhoCreatedTheVideoProduct: userData?.email,
           createdAt: serverTimestamp(),
         });
 

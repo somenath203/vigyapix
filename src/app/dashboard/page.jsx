@@ -48,7 +48,7 @@ const Page = () => {
 
           <AiToolsList />
 
-          <UsersCreationHistory />
+          <UsersCreationHistory userEmailAddress={userData?.email} />
 
         </div>
 

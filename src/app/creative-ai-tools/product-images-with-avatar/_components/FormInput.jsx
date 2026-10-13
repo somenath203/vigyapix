@@ -4,7 +4,6 @@ import { ImagePlus, Square, Monitor, Smartphone, Sparkles, Loader2 } from "lucid
 import { useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Image as ImageKitImage } from "@imagekit/next";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,19 +21,19 @@ import { Button } from "@/components/ui/button";
 const avatarList = [
   {
     name: 'Avatar 1',
-    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/female_avatar_one.png'
+    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/female_avatar_two.png?updatedAt=1791888695039'
   },
   {
     name: 'Avatar 2',
-    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/men_avatar_two.png'
+    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/men_avatar_two.png?updatedAt=1791886676209'
   },
   {
     name: 'Avatar 3',
-    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/female_avatar_two.png?updatedAt=1791888695039'
+    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/female_avatar_one.png?updatedAt=1791886676166'
   },
   {
     name: 'Avatar 4',
-    imageUrl: '/Vigyapix%20Project%20Avatar%20Photo/men_avatar_one.png'
+    imageUrl: 'https://ik.imagekit.io/som75myid/Vigyapix%20Project%20Avatar%20Photo/men_avatar_one.png?updatedAt=1791886676216'
   },
 ];
 
@@ -146,8 +145,7 @@ const FormInput = ({ onHandleInputByUserChange, onGenerateProductImageByAI, load
 
           {avatarList?.map((avatar) => (
 
-            <ImageKitImage
-              urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
+            <Image
               key={avatar.name}
               src={avatar.imageUrl}
               alt={avatar.name}
