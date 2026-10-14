@@ -8,6 +8,11 @@ import axios from "axios";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 
 const PreviewVideo = ({ data }) => {
@@ -65,6 +70,7 @@ const PreviewVideo = ({ data }) => {
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
       {data.map((item) => (
+
         <div
           key={item.id}
           className="flex flex-col overflow-hidden rounded-xl border p-3 shadow-sm"
@@ -86,33 +92,60 @@ const PreviewVideo = ({ data }) => {
           {/* Preview and Download buttons */}
           <div className="mt-3 flex flex-wrap gap-3">
 
-            <Link
-              href={item?.generatedProductVideoUrl}
-              target="_blank"
-              className="min-w-0 flex-1 hover:cursor-pointer"
-            >
-              <Button
-                variant="outline"
-                className="w-full hover:cursor-pointer"
-              >
-                <Eye />
-                
-              </Button>
-            </Link>
+            <Tooltip>
 
-            <Button
-              variant="outline"
-              className="min-w-0 flex-1 hover:cursor-pointer"
-              onClick={() =>
-                handleDownloadVideo(item?.generatedProductVideoUrl)
-              }
-            >
-              {isDownloadingVideo ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Download />
-              )}
-            </Button>
+              <TooltipTrigger
+                render={
+                  <Link
+                    href={item?.generatedProductVideoUrl}
+                    target="_blank"
+                    className="min-w-0 flex-1 hover:cursor-pointer"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full hover:cursor-pointer"
+                    >
+                      <Eye />
+                    </Button>
+                  </Link>
+                }
+              />
+
+              <TooltipContent>
+                <p>View Video</p>
+              </TooltipContent>
+
+            </Tooltip>
+
+            <Tooltip>
+
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    className="min-w-0 flex-1 hover:cursor-pointer"
+                    onClick={() =>
+                      handleDownloadVideo(item?.generatedProductVideoUrl)
+                    }
+                  >
+                    {isDownloadingVideo ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Download />
+                    )}
+                  </Button>
+                }
+              />
+
+              <TooltipContent>
+                <p>
+                  {isDownloadingVideo
+                    ? "Downloading Video..."
+                    : "Download Video"}
+                </p>
+              </TooltipContent>
+
+            </Tooltip>
 
           </div>
 

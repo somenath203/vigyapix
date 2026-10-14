@@ -6,19 +6,20 @@ import Link from "next/link";
 import { Download, Eye, Loader2 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@/components/ui/button";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const PreviewImage = ({ data }) => {
-
   const [isDownloadingImg, setIsDownloadingImg] = useState(false);
 
   const handleDownloadImage = async (imgUrl) => {
-
     try {
-
       setIsDownloadingImg(true);
 
       const res = await axios.get(imgUrl, {
@@ -42,19 +43,13 @@ const PreviewImage = ({ data }) => {
       window.URL.revokeObjectURL(blobImgUrl);
 
       toast.success("Image downloaded successfully!");
-
     } catch (error) {
-
       console.error("Image download failed:", error);
 
       toast.error("Failed to download image. Please try again.");
-
     } finally {
-
       setIsDownloadingImg(false);
-
     }
-
   };
 
   return (
@@ -77,39 +72,59 @@ const PreviewImage = ({ data }) => {
 
           {/* Preview and Download buttons */}
           <div className="mt-3 flex flex-wrap gap-3">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Link
+                    href={item?.generatedProductImageUrl}
+                    target="_blank"
+                    className="min-w-0 flex-1 hover:cursor-pointer"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full hover:cursor-pointer"
+                    >
+                      <Eye />
+                    </Button>
+                  </Link>
+                }
+              />
 
-            <Link href={item?.generatedProductImageUrl} target="_blank" className="min-w-0 flex-1 hover:cursor-pointer">
+              <TooltipContent>
+                <p>View Image</p>
+              </TooltipContent>
+            </Tooltip>
 
-              <Button
-                variant="outline"
-                className="w-full hover:cursor-pointer"
-              >
-                <Eye />
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    className="min-w-0 flex-1 hover:cursor-pointer"
+                    onClick={() =>
+                      handleDownloadImage(item?.generatedProductImageUrl)
+                    }
+                  >
+                    {isDownloadingImg ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Download />
+                    )}
+                  </Button>
+                }
+              />
 
-              </Button>
-
-            </Link>
-
-            <Button
-              variant="outline"
-              className="min-w-0 flex-1 hover:cursor-pointer"
-              onClick={() => handleDownloadImage(item?.generatedProductImageUrl)}
-            >
-              {isDownloadingImg ? <Loader2 className="animate-spin" /> : <Download />}
-
-            </Button>
-
+              <TooltipContent>
+                <p>
+                  {isDownloadingImg ? "Downloading Image..." : "Download Image"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
-
         </div>
-
       ))}
-
     </div>
-
   );
-
 };
-
 
 export default PreviewImage;
