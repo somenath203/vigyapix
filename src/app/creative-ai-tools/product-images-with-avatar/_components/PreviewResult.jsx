@@ -172,6 +172,7 @@ const PreviewResult = ({ generatedProductImage }) => {
             width={1024}
             height={1024}
             className="max-h-125 w-full rounded-lg object-contain"
+            loading="eager"
           />
 
         ) : (
