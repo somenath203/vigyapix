@@ -285,7 +285,7 @@ const Page = () => {
 
         <div className="mx-auto max-w-6xl">
           
-          <h2 className="font-bold text-2xl my-3">
+          <h2 className="font-bold text-lg lg:text-2xl my-3">
             AI Product with Avatar Image Generator
           </h2>
 

@@ -9,6 +9,17 @@ import ProductImagesWithAvatar from "./ProductImagesWithAvatar";
 import { db } from "@/firebaseConfig";
 
 
+// Shared look for every tab trigger. Covers both Radix (data-[state=active])
+// and Base UI (data-active) attribute conventions, plus the dark-mode defaults
+// that the stock shadcn trigger applies.
+const tabTriggerStyles =
+  "flex-none rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:cursor-pointer hover:text-foreground " +
+  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm " +
+  "data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm " +
+  "dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground " +
+  "dark:data-active:border-transparent dark:data-active:bg-primary dark:data-active:text-primary-foreground";
+
+
 const UsersCreationHistory = ({ userEmailAddress }) => {
 
   // Fetch all generated product images for a particular email address
@@ -96,36 +107,36 @@ const UsersCreationHistory = ({ userEmailAddress }) => {
 
 
   return (
-    <Tabs defaultValue="productimages" className="w-full mt-4">
+    <Tabs defaultValue="productimages" className="mt-4 w-full">
 
-      <TabsList>
+      <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl border border-border bg-muted/60 p-1 sm:w-fit">
 
-        <TabsTrigger value="productimages" className="hover:cursor-pointer">
+        <TabsTrigger value="productimages" className={tabTriggerStyles}>
           Product Images
         </TabsTrigger>
 
-        <TabsTrigger value="productvideos" className="hover:cursor-pointer">
+        <TabsTrigger value="productvideos" className={tabTriggerStyles}>
           Product Videos
         </TabsTrigger>
 
         <TabsTrigger
           value="productimageswithavatar"
-          className="hover:cursor-pointer"
+          className={tabTriggerStyles}
         >
           Product Images with Avatar
         </TabsTrigger>
 
       </TabsList>
 
-      <TabsContent value="productimages">
+      <TabsContent value="productimages" className="mt-6">
         <ProductImagesList allImageProducts={fetchProductImages} />
       </TabsContent>
 
-      <TabsContent value="productvideos">
+      <TabsContent value="productvideos" className="mt-6">
         <ProductVideosList allVideoProducts={fetchProductVideos} />
       </TabsContent>
 
-      <TabsContent value="productimageswithavatar">
+      <TabsContent value="productimageswithavatar" className="mt-6">
         <ProductImagesWithAvatar allImageWithAvatarProducts={fetchProductImagesWithAvatar} />
       </TabsContent>
 
