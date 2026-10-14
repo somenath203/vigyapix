@@ -2,6 +2,7 @@
 
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { auth } from "@/firebaseConfig";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ const Logout = () => {
     try {
 
       await signOut(auth);
+
+      toast.success("You have been logged out successfully.");
 
       router.replace("/");
 

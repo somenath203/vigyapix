@@ -3,10 +3,10 @@
 
 // TODO: Set this to your app's real entry / sign-in route (e.g. "/sign-in" or "/dashboard").
 // Every "Get Started", "Sign in", "Create Your First Ad", "Start Creating" button uses it.
-export const ENTRY_ROUTE = "#";
+export const ENTRY_ROUTE = "/dashboard";
 
 // TODO: Paste your GitHub repository URL here (e.g. "https://github.com/<user>/<repo>").
-export const GITHUB_REPO_URL = "#";
+export const GITHUB_REPO_URL = "https://github.com/somenath203/vigyapix";
 
 export const NAV_LINKS = [
   { label: "Features", id: "features" },

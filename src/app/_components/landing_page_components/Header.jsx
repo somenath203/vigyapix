@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
+import { auth } from "@/firebaseConfig";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -13,13 +16,35 @@ import {
   GITHUB_REPO_URL,
   NAV_LINKS,
   externalProps,
-} from "@/lib/landing-config"
+} from "@/lib/landing-config";
 import { GithubMark, ScrollLink, Wordmark } from "./Shared";
 import { ModeToggle } from "@/components/ThemeToggle";
+import { useAuthGlobalProvider } from "@/components/AuthProvider";
+import LoadUserDataLoading from "../LoadUserDataLoading";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+
+  const router = useRouter();
+
+  const { userData, loadingUserData } = useAuthGlobalProvider();
+
+  const handleGoogleAuthentication = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider);
+
+      const user = result?.user;
+
+      console.log("Signed-in user:", user);
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Close the mobile menu with the Escape key.
   useEffect(() => {
@@ -31,9 +56,18 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
+  if (loadingUserData) {
+    return <LoadUserDataLoading />;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur supports-backdrop-filter:bg-background/70">
-      <div className={cn(CONTAINER, "flex h-16 items-center justify-between gap-4")}>
+      <div
+        className={cn(
+          CONTAINER,
+          "flex h-16 items-center justify-between gap-4",
+        )}
+      >
         <ScrollLink
           targetId="top"
           aria-label="Vigyapix, back to top"
@@ -49,7 +83,7 @@ export default function Header() {
               targetId={link.id}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                FOCUS_RING
+                FOCUS_RING,
               )}
             >
               {link.label}
@@ -67,15 +101,18 @@ export default function Header() {
             <GithubMark className="size-5" />
           </a>
           <ModeToggle />
-          <Link
-            href={ENTRY_ROUTE}
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            Sign in
-          </Link>
-          <Link href={ENTRY_ROUTE} className={buttonVariants({})}>
-            Get Started
-          </Link>
+          {userData ? (
+            <Link href={ENTRY_ROUTE} className={buttonVariants({})}>
+              Get Started
+            </Link>
+          ) : (
+            <div
+              className={buttonVariants({})}
+              onClick={handleGoogleAuthentication}
+            >
+              Get Started
+            </div>
+          )}
         </div>
 
         <button
@@ -86,7 +123,7 @@ export default function Header() {
           aria-label={open ? "Close menu" : "Open menu"}
           className={cn(
             buttonVariants({ variant: "outline", size: "icon" }),
-            "md:hidden"
+            "md:hidden",
           )}
         >
           {open ? (
@@ -98,7 +135,10 @@ export default function Header() {
       </div>
 
       {open ? (
-        <div id="mobile-menu" className="border-t border-border bg-background md:hidden">
+        <div
+          id="mobile-menu"
+          className="border-t border-border bg-background md:hidden"
+        >
           <nav
             aria-label="Mobile"
             className={cn(CONTAINER, "flex flex-col gap-1 py-4")}
@@ -110,7 +150,7 @@ export default function Header() {
                 onClick={close}
                 className={cn(
                   "rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted",
-                  FOCUS_RING
+                  FOCUS_RING,
                 )}
               >
                 {link.label}
@@ -130,7 +170,7 @@ export default function Header() {
                 onClick={close}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "w-full"
+                  "w-full",
                 )}
               >
                 Sign in
@@ -140,7 +180,7 @@ export default function Header() {
                 {...externalProps(GITHUB_REPO_URL)}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "lg" }),
-                  "w-full gap-2"
+                  "w-full gap-2",
                 )}
               >
                 <GithubMark className="size-5" />

@@ -1,5 +1,10 @@
-import Link from "next/link";
+'use client';
 
+import Link from "next/link";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/navigation";
+
+import { auth } from "@/firebaseConfig";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -11,9 +16,35 @@ import {
   externalProps,
 } from "@/lib/landing-config";
 import { GithubMark, ScrollLink, Wordmark } from "./Shared";
+import LoadUserDataLoading from "../LoadUserDataLoading";
+import { useAuthGlobalProvider } from "@/components/AuthProvider";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+
+  const router = useRouter();
+
+  const { userData, loadingUserData } = useAuthGlobalProvider();
+
+  const handleGoogleAuthentication = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider);
+
+      const user = result?.user;
+
+      console.log("Signed-in user:", user);
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (loadingUserData) {
+    return <LoadUserDataLoading />;
+  }
 
   return (
     <footer className="border-t border-border bg-background">
@@ -36,7 +67,7 @@ export default function Footer() {
                 targetId={link.id}
                 className={cn(
                   "w-fit rounded text-muted-foreground transition-colors hover:text-foreground",
-                  FOCUS_RING
+                  FOCUS_RING,
                 )}
               >
                 {link.label}
@@ -45,16 +76,22 @@ export default function Footer() {
           </nav>
 
           <div className="flex flex-col items-start gap-3">
-            <Link href={ENTRY_ROUTE} className={buttonVariants({})}>
-              Get Started
-            </Link>
+            {userData ? (
+              <Link href={ENTRY_ROUTE} className={buttonVariants({})}>
+                Get Started
+              </Link>
+            ) : (
+              <div
+                className={buttonVariants({})}
+                onClick={handleGoogleAuthentication}
+              >
+                Get Started
+              </div>
+            )}
             <a
               href={GITHUB_REPO_URL}
               {...externalProps(GITHUB_REPO_URL)}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "gap-2"
-              )}
+              className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
             >
               <GithubMark className="size-4" />
               View on GitHub
@@ -63,7 +100,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
-          © {year} Vigyapix. All rights reserved.
+          © {year} Vigyapix | Somenath Choudhury
         </div>
       </div>
     </footer>

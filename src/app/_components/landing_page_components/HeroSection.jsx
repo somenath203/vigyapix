@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,17 +9,53 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
+import { auth } from "@/firebaseConfig";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CONTAINER, ENTRY_ROUTE } from "@/lib/landing-config";
 import { AdScene, PlainPhotoScene } from "./Mockup";
 import { ScrollLink } from "./Shared";
+import { useAuthGlobalProvider } from "@/components/AuthProvider";
+import LoadUserDataLoading from "../LoadUserDataLoading";
+
 
 const chipClass =
   "inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-card-foreground shadow-md";
 
 export default function HeroSection() {
+
+  const router = useRouter();
+
+  const { userData, loadingUserData } = useAuthGlobalProvider();
+
+  const handleGoogleAuthentication = async () => {
+
+    try {
+
+      const provider = new GoogleAuthProvider();
+
+      await signInWithPopup(auth, provider);
+
+      router.push("/dashboard");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+
+  if (loadingUserData) {
+
+    return <LoadUserDataLoading />
+
+  }
+
   return (
     <section
       id="hero"
@@ -55,13 +93,16 @@ export default function HeroSection() {
           </p>
 
           <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center lg:justify-start">
-            <Link
+            {userData ? <Link
               href={ENTRY_ROUTE}
               className={cn(buttonVariants({ size: "lg" }), "gap-2")}
             >
               Create Your First Ad
               <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
+            </Link> : <div className={cn(buttonVariants({ size: "lg" }), "gap-2")} onClick={handleGoogleAuthentication}>
+              Create Your First Ad
+              <ArrowRight className="size-4" aria-hidden="true" />
+              </div>}
             <ScrollLink
               targetId="features"
               className={buttonVariants({ variant: "outline", size: "lg" })}

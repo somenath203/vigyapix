@@ -41,7 +41,7 @@ const FAQS = [
   {
     question: "Where can I find my previously generated content?",
     answer:
-      "Open the application's creation history to browse your generated product images, product videos, and avatar-based advertisements in their respective tabs.",
+      "Open the application's dashboard to browse your generated product images, product videos, and avatar-based advertisements in their respective tabs.",
   },
   {
     question:
