@@ -67,6 +67,7 @@ The following technologies and services were used to build Vigyapix.
 | Axios        | Making HTTP requests to external APIs.                         |
 | Lucide React | Providing icons for the user interface.                        |
 | UUID         | Generating unique identifiers where needed.                    |
+| Sonner       | Displaying toast notifications to provide feedback to users.   |
 
 ## Project Flow Diagram
 
