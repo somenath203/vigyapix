@@ -166,7 +166,7 @@ Before running the application, you need to obtain the required credentials from
 
 Check the `.env.example` file in the project repository to see the required environment variables.
 
-Create a `.env.local` file in the root directory of the project and add the following variables with your own credentials:
+Create a `.env` file in the root directory of the project and add the following variables with your own credentials:
 
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
